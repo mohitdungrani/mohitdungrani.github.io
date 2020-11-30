@@ -1,0 +1,198 @@
+{% extends 'users/base.html' %}
+{% block content %}
+{% load new_tag %}
+<div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row d-flex align-items-center flex-wrap">
+            <div class="col-md-7">
+                <h1 class="h2" style="color: white;">Products</h1>
+            </div>
+            <div class="col-md-5">
+                <ul class="breadcrumb d-flex justify-content-end">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" style="color: white;">Home</a></li>
+                    <li class="breadcrumb-item active text-white">Products</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="content">
+    <div class="container">
+        <!-- <section class="bar no-padding-bottom">
+            <div class="row">
+                <div class="col-md-12">
+                    <div style="line-height: 2.1; display: inline-block; margin-top: 10; text-transform: uppercase; letter-spacing: 0.1em;">
+                        <h2 class="text-center" style="color:green">Fresh and Healthy</h2>
+                    </div>
+
+                    <p class=" lead no-mb "></p>
+                </div>
+            </div>
+        </section> -->
+        <!-- <div class="active-green-4 mb-4 py-4 ">
+            <input class="form-control " type="text " placeholder="Search Products " aria-label="Search ">
+        </div> -->
+
+        <div class="col-md-12 mt-5">
+            <div style="line-height: 2.1; display: inline-block; margin-bottom: 0; text-transform: uppercase; letter-spacing: 0.1em;">
+                <h2>Groceries</h2>
+                <hr style="background:green">
+            </div>
+        </div>
+
+
+        
+        <!-- Modal -->
+        <div class="modal fade call_modal" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content ml-1">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">  
+                 <img src="" class="modal_img ml-3" id="grocery_modal_img">    
+                 <div class="modal-footer">  
+                 </div>
+                 <div class="row">
+                   <div class="col-6">
+                     <div class="grocery_modal_price text-center  text-bold"></div>
+                   </div>
+                   <div class="col-6">
+                    <div class="grocery_modal_quantity text-center text-bold"></div>  
+                   </div>
+                 </div>
+                    
+                    <div class="modal-footer">               
+                    </div>         
+                <div class="row">
+                  <div class="col-4">
+                    <div class="grocery_modal_protine text-bold"></div>
+                  </div>
+                  <div class="col-4">
+                     <div class="grocery_modal_carbo text-bold"></div>
+                  </div>
+                  <div class="offset-1 col-3">
+                    <div class="grocery_modal_fat text-bold"></div>
+                 </div>
+                </div>
+              </div>
+              <div class="modal-footer">               
+              </div>  
+         </div>
+        </div>
+       </div>
+
+
+        <div class="row products products-big">
+            {% for obj in object_list %}
+            {% if obj.is_avail %}
+            <div class="col-md-4 col-sm-6">
+                <div class="product">
+                    <div class="image product_image">
+                        <img src="{{ obj.img.url }}" alt="" data-toggle="modal" data-target="#exampleModalCenter" data-id="{{obj.id}}" class="img-fluid onClick_modal" style ="height: 250px;">
+                    </div>                                                            
+                       <div class="text">
+                        <div class="row">
+                            <h3 class="p-name h5 col-4 mt-3 grocery_name_{{obj.id}}">{{ obj.name }}</h3>
+                            <h4 class="col-4 grocery_quantity_{{obj.id}}" style="margin-top: 17px;">{{ obj.quantity }}</h4>
+                                                 
+                            <div class="col-4">
+                                <p class="price grocery_price_{{obj.id}}" style="margin-top: 9px;">
+                                    &#8377; {{ obj.price }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4 product-info d-none grocery_protine_{{obj.id}}">Protine
+                                <p>{{ obj.protine }}%</p>
+                            </div>
+                            <div class="col-4 product-info d-none grocery_carbo_{{obj.id}}">CarboHydrate
+                                <p>{{ obj.carboHydrate }}%</p>
+                            </div>
+                            <div class="col-4 product-info d-none grocery_fat_{{obj.id}}">Fat
+                                <p>{{ obj.fat }}%</p>
+                            </div>
+                        </div>
+                     
+                
+                        {% if request.user.is_authenticated %}
+                            {% if request.user.cart.grocerycart_set.all|containsgrocery:obj %}
+                            <div class="d-flex justify-content-center">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <input type="number" value="{{ request.user.cart.grocerycart_set.all|get_grocery_quantity:obj }}" min="1" class="form-control product-quantity" style="width: 60px;">
+                                        </td>
+                                        <td>
+                                            <button data-type="grocery"  data-id="{{ obj.id }}" updation-url="{% url 'update_cart_ajax' %}" class="list_cart_btn2 btn btn-template-white">Add <i class="fa fa-shopping-cart" aria-hidden="true"></i></button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                          
+                            {% else %}
+                                <button  class="add_to_cart btn btn-template-white" data-type="grocery" validation-url="{% url 'add_to_cart_ajax' %}" data-id="{{ obj.id }}">Add to cart <i class="fa fa-shopping-cart" aria-hidden="true"></i></button>
+                                <div class="d-none justify-content-center list_cart_div">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <input type="number" value="1" min="1" class="form-control product-quantity" style="width: 60px;">
+                                            </td>
+                                            <td>
+                                                <button data-type="grocery"  data-id="{{ obj.id }}" updation-url="{% url 'update_cart_ajax' %}" class="list_cart_btn2 btn btn-template-white">Add <i class="fa fa-shopping-cart" aria-hidden="true"></i></button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <button  class="login_add_to_cart btn btn-template-white" >Add to cart <i class="fa fa-shopping-cart" aria-hidden="true"></i></button>    
+                        {% endif %}
+                    </div>
+                </div>
+            </div>  
+            
+         
+            {% endif %}
+            {% empty %}
+                <div class="text-center col-12">
+                    <h2 class="text-success my-5 "> No Product Available</h2> 
+                </div>
+            {% endfor %}            
+        </div>
+        </section>
+    </div>
+
+    <div class="pages">
+        <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+            <ul class="pagination">
+                {% if is_paginated %}
+                    {% if page_obj.has_previous %} 
+                        <li class="page-item"><a href="?page=1" class="page-link">First</a></li>
+                        <li class="page-item"><a href="?page={{ page_obj.previous_page_number }} " class="page-link"><i class="fa fa-angle-double-left"></i></a></li>
+                    {% endif %}
+                    {% for page in page_obj.paginator.page_range %}
+                        {% if page == page_obj.number %}
+                        <li class="page-item active"><a href="?page={{ page_obj.number }}" class="page-link">{{page}}</a></li>
+                        {% elif page > page_obj.number|add:'-3' and page < page_obj.number|add:'3' %}
+                        <li class="page-item"><a href="?page={{ page }}" class="page-link">{{ page }}</a></li>
+
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a href="?page={{ page_obj.next_page_number }} " class="page-link"><i class="fa fa-angle-double-right"></i></a></li>
+                        <li class = "page-item"><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">Last</a></li>
+                    {% endif %}
+                {% endif %}
+
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+{% endblock content %}
