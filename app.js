@@ -30,7 +30,7 @@ $(document).ready(() => {
     });
     function text_chage(){
         var $text = $('.my_post');
-        var data = ['Student','Freelancer', 'Designer', 'Developer'];
+        var data = ['Freelancer', 'Designer', 'Developer'];
         text_sequence(0);
         function text_sequence(i){
             // $text.html("");
